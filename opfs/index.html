@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WASM S3 Downloader</title>
+</head>
+<body>
+    <script type="text/javascript">
+
+console.log("coucou")
+async function init() {
+    const opfsRoot = await navigator.storage.getDirectory();
+    
+const fileHandle = await opfsRoot.getFileHandle("my first file", {
+  create: true,
+});
+const directoryHandle = await opfsRoot.getDirectoryHandle("my first folder", {
+  create: true,
+});
+const nestedFileHandle = await directoryHandle.getFileHandle(
+  "my first nested file",
+  { create: true },
+);
+const nestedDirectoryHandle = await directoryHandle.getDirectoryHandle(
+  "my first nested folder",
+  { create: true },
+);
+
+// Access existing files and folders via their names
+const existingFileHandle = await opfsRoot.getFileHandle("my first file");
+const existingDirectoryHandle =
+  await opfsRoot.getDirectoryHandle(directoryHandle.name);
+
+console.log("coucou")
+for await (let [name, handle] of directoryHandle) {
+  console.log({ name, handle })
+}
+}
+init()
+    </script>
+</body>
+</html>
