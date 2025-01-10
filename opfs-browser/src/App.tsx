@@ -1,33 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tree, setTree] = useState([])
+
+  useEffect(() => {
+    async function initOpfs() {
+      const opfsRoot = await navigator.storage.getDirectory();
+      await opfsRoot.getFileHandle("my first file", {
+        create: true,
+      });
+      const directoryHandle = await opfsRoot.getDirectoryHandle("my first folder", {
+        create: true,
+      });
+      await directoryHandle.getFileHandle(
+        "my first nested file",
+        { create: true },
+      );
+      await directoryHandle.getDirectoryHandle(
+        "my first nested folder",
+        { create: true },
+      );
+      console.log(directoryHandle)
+      const entries = []
+      for await (let [name, handle] of directoryHandle) {
+        entries.push({ name, handle })
+      }
+      setTree(entries)
+    }
+    initOpfs()
+  }, [])
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      {tree?.map(({ name })  => <div key={name}>
+        {name}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      )}
     </>
   )
 }
