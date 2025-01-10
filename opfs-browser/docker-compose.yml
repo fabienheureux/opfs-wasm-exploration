@@ -1,0 +1,18 @@
+services:
+  garage:
+    hostname: garage
+    image: dxflrs/garage:v1.0.0
+    restart: unless-stopped
+    expose:
+      - 3900
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml
+      - ./garage/meta:/var/lib/garage/meta
+      - ./garage/data:/var/lib/garage/data
+  caddy:
+    image: caddy:latest
+    ports:
+      - "8000:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
